@@ -41,6 +41,16 @@
             <button id="manage-locations-btn" class="manage-locations-btn">
                 <span class="material-symbols-outlined btn-icon">settings</span> Manage Locations
             </button>
+
+            <!-- Google Map -->
+            <div id="google-map-section" class="sidebar-map-wrapper hidden" style="margin-top: 2rem;">
+                <h2 class="sidebar-category-title">City Map</h2>
+                <div class="sidebar-map-container"
+                    style="border-radius: var(--radius-md); overflow: hidden; height: 20rem; border: 1px solid var(--border-color);">
+                    <iframe id="google-map-iframe" class="google-map-iframe" width="100%" height="100%" frameborder="0"
+                        allowfullscreen></iframe>
+                </div>
+            </div>
         </div>
 
         <div class="sidebar-footer">
@@ -176,29 +186,26 @@
                 </h3>
 
                 <div class="forecast-container">
+                    <button id="scroll-left-btn" class="scroll-btn scroll-left" aria-label="Scroll left">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
                     <div id="hourly-forecast-list" class="forecast-list no-scrollbar">
                         <!-- Hourly items injected via JS -->
                     </div>
                     <div class="scroll-fade"></div>
+                    <button id="scroll-right-btn" class="scroll-btn scroll-right" aria-label="Scroll right">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
                 </div>
             </section>
 
-            <!-- City Gallery Section -->
-            <section id="city-gallery-section" class="city-gallery-section hidden">
-                <h3 class="section-title">
-                    <span class="material-symbols-outlined section-icon">photo_library</span>
-                    City Photos
-                </h3>
-                <div id="city-gallery-grid" class="city-gallery-grid">
-                    <!-- Photo cards injected via JS -->
-                </div>
-            </section>
 
-            <!-- Radar Map -->
+
+            <!-- Temperature Map -->
             <section id="radar-map-section" class="radar-map-section hidden">
                 <h3 class="section-title">
-                    <span class="material-symbols-outlined section-icon">map</span>
-                    Radar Map
+                    <span class="material-symbols-outlined section-icon">device_thermostat</span>
+                    Temperature Map
                 </h3>
                 <div class="radar-map-container">
                     <iframe id="radar-map-iframe" class="radar-map-iframe" width="100%" height="100%" frameborder="0"

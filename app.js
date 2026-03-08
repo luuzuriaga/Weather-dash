@@ -37,9 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const hourlyForecastSection = document.getElementById('hourly-forecast-section');
     const hourlyForecastList = document.getElementById('hourly-forecast-list');
 
-    // Gallery
-    const cityGallerySection = document.getElementById('city-gallery-section');
-    const cityGalleryGrid = document.getElementById('city-gallery-grid');
+    // Google Map
+    const googleMapSection = document.getElementById('google-map-section');
+    const googleMapIframe = document.getElementById('google-map-iframe');
 
     // Radar Map
     const radarMapSection = document.getElementById('radar-map-section');
@@ -71,6 +71,18 @@ document.addEventListener('DOMContentLoaded', () => {
         citySearchInput.addEventListener('input', handleSearchInput);
 
         saveCityBtn.addEventListener('click', toggleSaveCurrentCity);
+
+        const scrollLeftBtn = document.getElementById('scroll-left-btn');
+        const scrollRightBtn = document.getElementById('scroll-right-btn');
+
+        if (scrollLeftBtn && scrollRightBtn) {
+            scrollLeftBtn.addEventListener('click', () => {
+                hourlyForecastList.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+            scrollRightBtn.addEventListener('click', () => {
+                hourlyForecastList.scrollBy({ left: 300, behavior: 'smooth' });
+            });
+        }
 
         manageLocationsBtn.addEventListener('click', openModal);
         closeModalBtn.addEventListener('click', closeModal);
@@ -293,9 +305,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Basic Info
         currentCityName.textContent = city.name + (city.country_code ? `, ${city.country_code}` : '');
 
-        // Fetch City Image Backgrop
-        updateCityImage(city.name);
-
         const now = new Date();
         const options = { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' };
         currentDateTime.textContent = now.toLocaleDateString('en-US', options);
@@ -321,79 +330,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update Radar Map
         updateRadarMap(city.latitude, city.longitude);
+        updateGoogleMap(city.name);
 
         heroSection.classList.remove('hidden');
         hourlyForecastSection.classList.remove('hidden');
         radarMapSection.classList.remove('hidden');
+        googleMapSection.classList.remove('hidden');
     }
 
     function updateRadarMap(lat, lon) {
-        const url = `https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=km%2Fh&zoom=5&overlay=radar&product=radar&message=true&marker=true&lat=${lat}&lon=${lon}`;
+        // Updated to show 'termperature' instead of 'radar'
+        const url = `https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=km%2Fh&zoom=5&overlay=temp&product=temp&message=true&marker=true&lat=${lat}&lon=${lon}`;
         radarMapIframe.src = url;
     }
 
-    async function updateCityImage(cityName) {
-        cityImageContainer.style.backgroundImage = 'none';
-        clearNode(cityGalleryGrid);
-        cityGallerySection.classList.add('hidden');
+    function updateGoogleMap(cityName) {
+        googleMapSection.classList.add('hidden');
+        if (!cityName) return;
 
-        try {
-            // 1. Fetch main thumbnail for the card background
-            const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(cityName)}&prop=pageimages&format=json&pithumbsize=1000&origin=*`;
-            const response = await fetch(url);
-            const data = await response.json();
-            const pages = data.query.pages;
-            const pageId = Object.keys(pages)[0];
-
-            if (pageId !== '-1' && pages[pageId].thumbnail) {
-                const imgUrl = pages[pageId].thumbnail.source;
-                if (!imgUrl.includes('.svg')) {
-                    cityImageContainer.style.backgroundImage = `url('${imgUrl}')`;
-                }
-            }
-
-            // 2. Fetch extensive image list for the gallery
-            const galleryUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(cityName)}&generator=images&gimlimit=20&prop=imageinfo&iiprop=url&format=json&origin=*`;
-            const galleryRes = await fetch(galleryUrl);
-            const galleryData = await galleryRes.json();
-
-            if (galleryData.query && galleryData.query.pages) {
-                const imgPages = Object.values(galleryData.query.pages);
-
-                // Filter specifically for photograph extensions and ignore common metadata images
-                const photos = imgPages
-                    .filter(page => {
-                        if (!page.imageinfo || page.imageinfo.length === 0) return false;
-                        const u = page.imageinfo[0].url.toLowerCase();
-                        if (u.includes('map') || u.includes('flag') || u.includes('logo') || u.includes('symbol') || u.includes('coat_of_arms')) return false;
-                        return u.endsWith('.jpg') || u.endsWith('.jpeg');
-                    })
-                    .map(page => page.imageinfo[0].url);
-
-                if (photos.length > 0) {
-                    // Limiting to an aestethic grid of up to 4 photos
-                    const displayPhotos = photos.slice(0, 4);
-
-                    displayPhotos.forEach(photoUrl => {
-                        const card = document.createElement('div');
-                        card.className = 'gallery-card';
-
-                        const img = document.createElement('img');
-                        img.src = photoUrl;
-                        img.className = 'gallery-img';
-                        img.alt = `Photo of ${cityName}`;
-                        img.loading = 'lazy'; // Optimization
-
-                        card.appendChild(img);
-                        cityGalleryGrid.appendChild(card);
-                    });
-
-                    cityGallerySection.classList.remove('hidden');
-                }
-            }
-        } catch (err) {
-            console.error('Error fetching city media:', err);
-        }
+        // Simple embed map
+        const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(cityName)}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+        googleMapIframe.src = mapUrl;
     }
 
     function renderHourlyForecast(hourlyData) {
@@ -542,7 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const infoGroup = document.createElement('div');
         infoGroup.className = 'city-info-group';
-        infoGroup.addEventListener('click', () => {
+        item.addEventListener('click', () => {
             loadCityWeather(city);
             closeMobileMenu();
             if (forModal) closeModal();
@@ -586,8 +543,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
         deleteBtn.appendChild(deleteIcon);
 
+        const rightWrapper = document.createElement('div');
+        rightWrapper.style.display = 'flex';
+        rightWrapper.style.alignItems = 'center';
+        rightWrapper.style.gap = '1.2rem';
+
+        const tempWrapper = document.createElement('div');
+        tempWrapper.style.display = 'flex';
+        tempWrapper.style.alignItems = 'center';
+        tempWrapper.style.gap = '0.6rem';
+
+        const tempText = document.createElement('span');
+        tempText.textContent = '...';
+        tempText.style.fontWeight = '600';
+        tempText.style.fontSize = '1.6rem';
+
+        const tempIcon = document.createElement('img');
+        tempIcon.style.width = '24px';
+        tempIcon.style.height = '24px';
+        tempIcon.style.display = 'none';
+
+        tempWrapper.appendChild(tempText);
+        tempWrapper.appendChild(tempIcon);
+
+        rightWrapper.appendChild(tempWrapper);
+        rightWrapper.appendChild(deleteBtn);
+
         item.appendChild(infoGroup);
-        item.appendChild(deleteBtn);
+        item.appendChild(rightWrapper);
+
+        // Fetch temperature asynchronously
+        fetchWeather(city.latitude, city.longitude)
+            .then(data => {
+                const t = Math.round(data.current.temperature_2m);
+                tempText.textContent = `${t}°C`;
+                tempIcon.style.display = 'block';
+
+                if (t >= 25) {
+                    // Hot png (Hot Face emoji)
+                    tempIcon.src = 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f975.png';
+                } else if (t <= 12) {
+                    // Cold png (Cold Face emoji)
+                    tempIcon.src = 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f976.png';
+                } else {
+                    // Normal png (Thermometer)
+                    tempIcon.src = 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f321.png';
+                }
+            })
+            .catch(() => {
+                tempText.textContent = '--°C';
+            });
 
         return item;
     }
@@ -621,8 +626,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingContainer.classList.add('hidden');
         heroSection.classList.add('hidden');
         hourlyForecastSection.classList.add('hidden');
-        cityGallerySection.classList.add('hidden');
         radarMapSection.classList.add('hidden');
+        googleMapSection.classList.add('hidden');
     }
 
     function clearNode(node) {

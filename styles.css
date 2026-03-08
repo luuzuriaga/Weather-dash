@@ -762,6 +762,46 @@ body {
     max-width: 100%;
 }
 
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 4.8rem;
+    height: 4.8rem;
+    border-radius: 50%;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    display: none;
+    /* Mobile hidden by default */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+@media (min-width: 768px) {
+    .forecast-container:hover .scroll-btn {
+        display: flex;
+    }
+}
+
+.scroll-btn:hover {
+    background-color: var(--primary-color-transparent);
+    color: var(--primary-color);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.scroll-left {
+    left: -2.4rem;
+}
+
+.scroll-right {
+    right: -2.4rem;
+}
+
 .forecast-list {
     display: flex;
     overflow-x: auto;
