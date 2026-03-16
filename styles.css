@@ -415,11 +415,49 @@ body.weather-snow {
     letter-spacing: 0.5px;
 }
 
+.forecast-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.scroll-btn:hover {
+    background: rgba(59, 130, 246, 0.6);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    color: #fff;
+}
+
+.scroll-btn.left { left: -18px; }
+.scroll-btn.right { right: -18px; }
+
 .forecast-row {
     display: flex;
     gap: 1.2rem;
     overflow-x: auto;
     padding-bottom: 1rem;
+    padding-left: 10px;
+    padding-right: 10px;
+    scroll-behavior: smooth;
+    width: 100%;
 }
 
 .forecast-item {
