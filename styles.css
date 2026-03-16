@@ -37,24 +37,40 @@ body {
 }
 
 /* Dynamic Weather Backgrounds */
+@keyframes gradientBg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 body.weather-sunny {
     background: linear-gradient(135deg, #4facfe, #00f2fe);
+    background-size: 200% 200%;
+    animation: gradientBg 15s ease infinite;
 }
 
 body.weather-cloudy {
     background: linear-gradient(135deg, #6b7280, #374151);
+    background-size: 200% 200%;
+    animation: gradientBg 15s ease infinite;
 }
 
 body.weather-night {
     background: linear-gradient(135deg, #0f172a, #1e293b);
+    background-size: 200% 200%;
+    animation: gradientBg 15s ease infinite;
 }
 
 body.weather-rain {
     background: linear-gradient(135deg, #1e3c72, #2a5298);
+    background-size: 200% 200%;
+    animation: gradientBg 15s ease infinite;
 }
 
 body.weather-snow {
     background: linear-gradient(135deg, #8baaaa, #ae8b9c);
+    background-size: 200% 200%;
+    animation: gradientBg 15s ease infinite;
 }
 
 /* Utilities */
