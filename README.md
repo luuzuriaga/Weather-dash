@@ -1,4 +1,4 @@
-# 🌤️ Clima Mundial - Global Weather Dashboard
+# 🌤️ Weather Dash - Global Weather Dashboard
 
 A beautiful, modern, and highly responsive weather dashboard application built with vanilla web technologies. It provides real-time weather information and forecasts with a stunning premium "glassmorphism" design, exactly matching a professional layout mockup.
 
