@@ -1,64 +1,96 @@
-# 🌤️ Weather Dash - Global Weather Dashboard
+# 🌤️ Weather Dash - Portfolio-Quality React Weather Dashboard
 
-A beautiful, modern, and highly responsive weather dashboard application built with vanilla web technologies. It provides real-time weather information and forecasts with a stunning premium "glassmorphism" design, exactly matching a professional layout mockup.
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)](https://www.chartjs.org/)
+[![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
+
+**Weather Dash** is a modern, high-end SaaS weather dashboard inspired by the Apple Weather experience. Rewritten from the ground up in **React**, it features dynamic animated backgrounds, glassmorphism UI/UX, and professional-grade performance suitable for a developer portfolio.
+
+![Main Dashboard Preview](/Users/lucerouzuriaga/.gemini/antigravity/brain/977484e2-9361-4c8e-aaf7-d09a46abd5e8/weather_dash_verification_1773633094369.png)
+
+---
 
 ## ✨ Key Features
 
-- **Real-time Weather Data**: Get current temperature, "feels like" temperature, humidity, and wind speed. Data is reliably sourced from [Open-Meteo](https://open-meteo.com/).
-- **Detailed 24-Hour Forecasts**: View the upcoming 24-hour weather forecast for any searched city with a smooth horizontal scrolling carousel.
-- **City Search & Autosuggest**: Quickly search for weather conditions across cities worldwide with real-time autosuggestions.
-- **Save Favorite Locations**: Bookmark your favorite cities for quick and easy access later. Your saved cities persist in your browser's local storage.
-- **Smart Saved City Indicators**: View the real-time temperature right next to your saved cities, complete with dynamic hot/cold/temperate emoji indicators (🔥, 🥶, 🌡️) that change automatically!
-- **Interactive City Map**: A fully integrated Google Maps iframe to easily see the geographical location of the chosen city.
-- **Live Temperature Map**: An integrated Windy.com interactive map overlay showing live temperature patterns circulating entirely around your selected region.
-- **Automatic Geolocation**: Automatically predicts your city on the first visit so you don't have to search manually. 
-- **Premium UI & Glassmorphism**: Features a sleek, single-page, fluid dark interface with frosted glass effects and smooth hover animations. No more split or cluttered screens!
+- **🚀 Modern React Architecture**: Built with React 18+ and Vite for blazing-fast performance and modular component design.
+- **🎭 Animated Weather Backgrounds**: Fully dynamic particle systems (Rain, Snow, Stars, Clouds) that react to real-time weather codes.
+- **📈 Advanced Visualizations**: 24-hour temperature trends visualized with interactive, responsive charts via **Chart.js**.
+- **📍 Real-time Geolocation**: Automatic location detection with a fallback system and manual city search history.
+- **✨ Premium UI/UX**: Extensive use of Glassmorphism, CSS Grid, and custom-tailored dark mode palettes for a high-end feel.
+- **📶 PWA Support**: Fully installable as a Progressive Web App with offline caching support.
+- **🗺️ Interactive Map Integration**: Real-time Google Maps integration for every searched city.
+- **💾 Persistent Search History**: Keep track of your frequent searches with browser-level local storage persistence.
 
-## 🛠️ Technologies Used
+---
 
-- **HTML5**: Semantic structure and modern CSS Grid / Flexbox layout integration.
-- **CSS3**: Vanilla CSS for styling, custom properties (variables), media queries, smooth animations, and backdrop-filter for premium glassmorphism.
-- **JavaScript (Vanilla JS)**: For robust async DOM manipulation, local storage handling, API integration, and interactive UI logic.
+## 🛠️ Technology Stack
 
-### External APIs & Integrations
-- [Open-Meteo Weather API](https://open-meteo.com/en/docs) for current weather and hourly forecasts.
-- [Open-Meteo Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for city search.
-- [GeoJS](https://www.geojs.io/) for IP-based default location tracking.
-- [Google Maps Embed API](https://developers.google.com/maps/documentation/embed/get-started) for static interactive maps.
-- [Windy.com Embed](https://www.windy.com/) for the real-time temperature map.
+- **Core**: React, Javascript (ES6+)
+- **Build Tool**: Vite
+- **Charting**: Chart.js & React-Chartjs-2
+- **Styling**: Vanilla CSS (Custom Properties, Flexbox, Grid)
+- **Icons**: Material Symbols Outlined
+- **API Services**: Open-Meteo (Geocoding & Forecast), Google Maps
+
+---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 📋 Prerequisites
 
-You don't need any complex build tools to run this application. A modern web browser is all that is required.
+- **Node.js** (v18.0.0 or higher)
+- **npm** or **yarn**
 
-### Installation & Execution
+### ⚙️ Installation
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/luuzuriaga/Weather-dash
-   ```
-2. **Navigate to the project directory**:
-   ```bash
+   git clone https://github.com/luuzuriaga/Weather-dash.git
    cd Weather-dash
    ```
-3. **Run the application local server**:
-   You can use any local server, for example, Python's built-in `http.server`:
+
+2. **Install dependencies**:
    ```bash
-   python3 -m http.server 8080
+   npm install
    ```
-   Or using Node.js:
+
+3. **Start the development server**:
    ```bash
-   npx serve .
+   npm run dev
    ```
-4. **Open in Browser**:
-   Navigate to `http://localhost:8080` (or `http://localhost:3000` with serve) in your preferred web browser.
+
+4. **Build for production**:
+   ```bash
+   npm run build
+   ```
+
+---
+
+## 📸 Screenshots
+
+### Night Mode with Stars
+![Night View](/Users/lucerouzuriaga/.gemini/antigravity/brain/977484e2-9361-4c8e-aaf7-d09a46abd5e8/stars_animation_check_final_1773634922126.png)
+
+### Mobile Optimized View
+![Mobile View](/Users/lucerouzuriaga/.gemini/antigravity/brain/977484e2-9361-4c8e-aaf7-d09a46abd5e8/mobile_view_dashboard_1773620567946.png)
+
+---
+
+## 🗺️ Roadmap
+
+- [x] Migrate to React & Vite
+- [x] Implement Animated Backgrounds
+- [x] Add Temperature Charts
+- [x] PWA Support
+- [ ] Integration with 7-day extended forecasts
+- [ ] Multiple units support (Fahrenheit/Celsius)
+- [ ] Detailed UV and Air Quality index history
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page if you want to contribute.
+Contributions are welcome! If you have suggestions for new features or improvements, feel free to open an issue or submit a pull request.
 
 ## 📝 License
 
-This project is open-source and available under the standard MIT License.
+This project is licensed under the MIT License.
