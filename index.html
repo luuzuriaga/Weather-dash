@@ -1,237 +1,196 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Weather Dashboard</title>
+    <title>Weather Dash</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=3">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body>
-    <!-- Mobile Sidebar Overlay -->
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-container">
-                <span class="material-symbols-outlined logo-icon">cloud</span>
-                <h1 class="logo-text">WeatherDash</h1>
-            </div>
-            <p class="sidebar-subtitle">Manage your locations</p>
+<body class="weather-sunny">
+    <!-- Loading and Error Overlays -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <span class="material-symbols-outlined spinner">sync</span>
+        <p>Cargando clima...</p>
+    </div>
+    
+    <div id="error-overlay" class="error-overlay hidden">
+        <div class="error-content">
+            <span class="material-symbols-outlined error-icon">error</span>
+            <p id="error-message">Ciudad no encontrada.</p>
+            <button id="close-error-btn">Cerrar</button>
         </div>
+    </div>
 
-        <div class="sidebar-content">
-            <h2 class="sidebar-category-title">Saved Cities</h2>
-            <div id="saved-cities-list" class="saved-cities-list">
-                <!-- Saved cities will be injected here via JS -->
+    <!-- Main Content App Fade wrapper -->
+    <div id="app-container" class="app-container fade-in">
+        <!-- Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <span class="material-symbols-outlined header-logo-icon">cloud</span>
+                <h1 class="header-title">Weather Dash</h1>
             </div>
-
-            <button id="manage-locations-btn" class="manage-locations-btn">
-                <span class="material-symbols-outlined btn-icon">settings</span> Manage Locations
-            </button>
-
-            <!-- Google Map -->
-            <div id="google-map-section" class="sidebar-map-wrapper hidden" style="margin-top: 2rem;">
-                <h2 class="sidebar-category-title">City Map</h2>
-                <div class="sidebar-map-container"
-                    style="border-radius: var(--radius-md); overflow: hidden; height: 20rem; border: 1px solid var(--border-color);">
-                    <iframe id="google-map-iframe" class="google-map-iframe" width="100%" height="100%" frameborder="0"
-                        allowfullscreen></iframe>
-                </div>
-            </div>
-        </div>
-
-        <div class="sidebar-footer">
-            <div class="info-box">
-                <span class="material-symbols-outlined info-icon">info</span>
-                <p class="info-text">Data provided by Open-Meteo</p>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main id="main-content" class="main-content">
-        <!-- Header / Search -->
-        <header class="main-header">
-            <button id="mobile-menu-btn" class="mobile-menu-btn" title="Toggle Menu">
-                <span class="material-symbols-outlined">menu</span>
-            </button>
-            <div class="search-container">
+            <div class="header-right">
                 <form id="search-form" class="search-form">
                     <span class="material-symbols-outlined search-icon">search</span>
-                    <input type="text" id="city-search-input" class="search-input" placeholder="Search for a city..."
-                        autocomplete="off">
-                    <button type="submit" class="search-btn">Search</button>
+                    <input type="text" id="city-search-input" class="search-input" placeholder="Buscar ciudad..." autocomplete="off">
+                    <ul id="search-suggestions" class="search-suggestions hidden"></ul>
                 </form>
-                <!-- Autosuggest Dropdown -->
-                <ul id="search-suggestions" class="search-suggestions hidden">
-                    <!-- Suggestions will be injected here via JS -->
-                </ul>
             </div>
         </header>
 
-        <!-- Scrollable Dashboard -->
-        <div id="dashboard-content" class="dashboard-content">
-
-            <!-- Error Message Container -->
-            <div id="error-container" class="error-container hidden">
-                <span class="material-symbols-outlined error-icon">error</span>
-                <p id="error-message" class="error-text">City not found.</p>
-            </div>
-
-            <div id="loading-container" class="loading-container hidden">
-                <span class="material-symbols-outlined spinner">sync</span>
-                <p>Loading weather data...</p>
-            </div>
-
-            <!-- Hero Section -->
-            <section id="hero-section" class="hero-section hidden">
-                <div class="hero-header">
-                    <div class="city-title-group">
-                        <div class="city-name-wrapper">
-                            <h2 id="current-city-name" class="city-name">--</h2>
-                            <button id="save-city-btn" class="save-city-btn" title="Save City">
-                                <span class="material-symbols-outlined save-icon">bookmark</span>
-                            </button>
+        <!-- Layout 70 / 30 -->
+        <main class="main-layout">
+            <!-- Left Column 70% -->
+            <section class="left-col">
+                <!-- Main Weather Card -->
+                <div class="main-weather-card glass-card">
+                    <div class="weather-card-header">
+                        <div class="weather-card-title">
+                            <span class="small-text">Actual</span>
+                            <h2 id="current-city-name" class="city-name">Málaga, España</h2>
+                            <p id="current-date-time" class="date-text">Lunes, 15 de marzo, 10:00 AM</p>
                         </div>
-                        <p id="current-date-time" class="current-date-time">--</p>
+                        <div class="weather-card-badge">
+                            <span class="badge-dot"></span> ACTUALIZADO AHORA
+                        </div>
+                    </div>
+
+                    <div class="weather-card-center">
+                        <div class="weather-icon-large-wrapper">
+                            <span id="current-icon" class="material-symbols-outlined weather-icon-large">partly_cloudy_day</span>
+                        </div>
+                        <div class="weather-temp-wrapper">
+                            <h1 class="temp-huge"><span id="current-temp">13</span>°</h1>
+                            <p id="current-description" class="weather-condition-text">Nublado</p>
+                        </div>
+                    </div>
+
+                    <div class="weather-card-bottom">
+                        <div class="glass-widget">
+                            <span class="material-symbols-outlined widget-icon">thermostat</span>
+                            <div class="widget-info">
+                                <span class="widget-label">Sensación térmica</span>
+                                <span id="current-feels-like" class="widget-value">11°</span>
+                            </div>
+                        </div>
+                        <div class="glass-widget">
+                            <span class="material-symbols-outlined widget-icon">water_drop</span>
+                            <div class="widget-info">
+                                <span class="widget-label">Humedad</span>
+                                <span id="current-humidity" class="widget-value">75%</span>
+                            </div>
+                        </div>
+                        <div class="glass-widget">
+                            <span class="material-symbols-outlined widget-icon">air</span>
+                            <div class="widget-info">
+                                <span class="widget-label">Viento</span>
+                                <span id="current-wind-speed" class="widget-value">12 km/h</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="current-weather-grid">
-                    <!-- Primary Temp Display -->
-                    <div class="primary-weather-card">
-                        <div id="city-image-container" class="city-image-container"></div>
-                        <div class="card-bg-shape-1"></div>
-                        <div class="card-bg-shape-2"></div>
-
-                        <div class="primary-weather-content">
-                            <div class="temp-summary">
-                                <div class="temp-main">
-                                    <span id="current-temp" class="temp-value">--</span>
-                                    <span class="temp-unit">°C</span>
-                                </div>
-                                <p id="current-description" class="weather-description">--</p>
-
-                                <div class="high-low-container">
-                                    <span class="high-low-item">
-                                        <span class="material-symbols-outlined">arrow_upward</span> High: <span
-                                            id="current-high">--</span>°
-                                    </span>
-                                    <span class="high-low-item">
-                                        <span class="material-symbols-outlined">arrow_downward</span> Low: <span
-                                            id="current-low">--</span>°
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="weather-icon-wrapper">
-                                <span id="current-icon"
-                                    class="material-symbols-outlined main-weather-icon">partly_cloudy_day</span>
-                            </div>
-                        </div>
+                <!-- Extra Weather Stats -->
+                <div class="extra-stats-grid">
+                    <div class="extra-stat-card glass-card">
+                        <span class="material-symbols-outlined stat-icon text-yellow">light_mode</span>
+                        <span class="stat-label">Índice UV</span>
+                        <span id="current-uv" class="stat-value">4 (Moderado)</span>
                     </div>
+                    <div class="extra-stat-card glass-card">
+                        <span class="material-symbols-outlined stat-icon text-blue-light">visibility</span>
+                        <span class="stat-label">Visibilidad</span>
+                        <span id="current-visibility" class="stat-value">10 km</span>
+                    </div>
+                    <div class="extra-stat-card glass-card">
+                        <span class="material-symbols-outlined stat-icon text-purple">speed</span>
+                        <span class="stat-label">Presión</span>
+                        <span id="current-pressure" class="stat-value">1012 hPa</span>
+                    </div>
+                    <div class="extra-stat-card glass-card">
+                        <span class="material-symbols-outlined stat-icon text-blue">rainy</span>
+                        <span class="stat-label">Probab. lluvia</span>
+                        <span id="current-precip-prob" class="stat-value">20%</span>
+                    </div>
+                </div>
 
-                    <!-- Details Grid -->
-                    <div class="weather-details-rail">
-                        <div class="detail-card">
-                            <div class="detail-icon-wrapper">
-                                <span class="material-symbols-outlined">thermostat</span>
-                            </div>
-                            <div class="detail-info">
-                                <p class="detail-label">Feels Like</p>
-                                <p class="detail-value"><span id="current-feels-like">--</span>°C</p>
-                            </div>
-                        </div>
+                <!-- Hourly Forecast -->
+                <div class="forecast-section">
+                    <h3 class="section-title">Pronóstico 24 horas</h3>
+                    <div class="forecast-row no-scrollbar" id="hourly-forecast-list">
+                        <!-- Forecast items injected via JS -->
+                    </div>
+                </div>
 
-                        <div class="detail-card">
-                            <div class="detail-icon-wrapper">
-                                <span class="material-symbols-outlined">water_drop</span>
-                            </div>
-                            <div class="detail-info">
-                                <p class="detail-label">Humidity</p>
-                                <p class="detail-value"><span id="current-humidity">--</span>%</p>
-                            </div>
-                        </div>
-
-                        <div class="detail-card">
-                            <div class="detail-icon-wrapper">
-                                <span class="material-symbols-outlined">air</span>
-                            </div>
-                            <div class="detail-info">
-                                <p class="detail-label">Wind Speed</p>
-                                <p class="detail-value"><span id="current-wind-speed">--</span> km/h</p>
-                            </div>
-                        </div>
+                <!-- Temperature Chart -->
+                <div class="chart-section glass-card">
+                    <h3 class="section-title">Temperatura (24 horas)</h3>
+                    <div class="chart-container">
+                        <canvas id="tempChart"></canvas>
                     </div>
                 </div>
             </section>
 
-            <!-- Hourly Forecast -->
-            <section id="hourly-forecast-section" class="hourly-forecast-section hidden">
-                <h3 class="section-title">
-                    <span class="material-symbols-outlined section-icon">schedule</span>
-                    24-Hour Forecast
-                </h3>
-
-                <div class="forecast-container">
-                    <button id="scroll-left-btn" class="scroll-btn scroll-left" aria-label="Scroll left">
-                        <span class="material-symbols-outlined">chevron_left</span>
-                    </button>
-                    <div id="hourly-forecast-list" class="forecast-list no-scrollbar">
-                        <!-- Hourly items injected via JS -->
+            <!-- Right Column 30% -->
+            <aside class="right-col" id="right-sidebar">
+                <!-- Saved Locations -->
+                <div class="saved-locations-section">
+                    <div class="section-header-flex">
+                        <h3 class="section-title">Ubicaciones Guardadas</h3>
+                        <button id="manage-locations-btn" class="text-btn">Gestionar</button>
                     </div>
-                    <div class="scroll-fade"></div>
-                    <button id="scroll-right-btn" class="scroll-btn scroll-right" aria-label="Scroll right">
-                        <span class="material-symbols-outlined">chevron_right</span>
+
+                    <div id="saved-cities-list" class="saved-locations-list">
+                        <!-- Cities injected here via JS -->
+                    </div>
+                    
+                    <p id="no-cities-msg" class="empty-msg hidden">No hay ubicaciones guardadas.</p>
+
+                    <button id="add-location-btn" class="dashed-btn">
+                        <span class="material-symbols-outlined">add</span> Añadir Ubicación
                     </button>
                 </div>
-            </section>
 
-
-
-            <!-- Temperature Map -->
-            <section id="radar-map-section" class="radar-map-section hidden">
-                <h3 class="section-title">
-                    <span class="material-symbols-outlined section-icon">device_thermostat</span>
-                    Temperature Map
-                </h3>
-                <div class="radar-map-container">
-                    <iframe id="radar-map-iframe" class="radar-map-iframe" width="100%" height="100%" frameborder="0"
-                        allowfullscreen></iframe>
+                <!-- Mini Map -->
+                <div class="map-section">
+                    <h3 class="section-title">Mapa</h3>
+                    <div class="map-card glass-card">
+                        <iframe id="google-map-iframe" class="google-map-iframe" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+                        <div class="map-overlay">
+                            <button id="view-interactive-map-btn" class="overlay-btn">Ver mapa interactivo</button>
+                        </div>
+                    </div>
                 </div>
-            </section>
-
-        </div>
-    </main>
+            </aside>
+        </main>
+    </div>
 
     <!-- Modal for Managing Locations -->
     <div id="locations-modal" class="modal-backdrop hidden">
-        <div class="modal-window shadow-lg">
+        <div class="modal-window glass-card">
             <div class="modal-header">
-                <h2 class="modal-title">Manage Locations</h2>
+                <h2 class="modal-title">Gestionar Ubicaciones</h2>
                 <button id="close-modal-btn" class="icon-btn">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p class="modal-desc">These are your currently saved cities:</p>
-                <!-- Add New City Form inside Modal -->
-                <form id="modal-add-form" class="modal-add-form">
-                    <input type="text" id="modal-city-input" class="search-input" placeholder="Add a new city..."
-                        autocomplete="off">
-                    <button type="submit" class="search-btn">Add</button>
+                <form id="modal-add-form" class="modal-search-form">
+                    <input type="text" id="modal-city-input" class="search-input" placeholder="Añadir nueva ciudad..." autocomplete="off">
+                    <button type="submit" class="search-btn">Añadir</button>
                     <ul id="modal-suggestions" class="search-suggestions hidden"></ul>
                 </form>
                 <div id="modal-saved-cities-list" class="modal-cities-list">
@@ -241,8 +200,9 @@
         </div>
     </div>
 
-    <!-- Application Script -->
-    <script src="app.js"></script>
+
+
+    <script src="app.js?v=2"></script>
 </body>
 
 </html>
